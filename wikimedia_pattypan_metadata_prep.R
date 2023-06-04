@@ -35,6 +35,10 @@ tbl_source_repo_raw_export_UK_comp_collecn10283_4857 <- read_csv("metadata/sourc
 
 print("Imported source metadata is a tibble: ")
 print(as.character(is_tibble(tbl_source_repo_raw_export_UK_comp_collecn10283_4857)))
+print("distinct uri values:")
+print(distinct(tbl_source_repo_raw_export_UK_comp_collecn10283_4857, dc_identifier_uri))
+print("distinct uri2 values:")
+print(distinct(tbl_source_repo_raw_export_UK_comp_collecn10283_4857, dc_identifier_uri_2))
 
 # Read in metadata from pattypan with readexcel()
 tbl_v1_2_PW_pattypan_2023_05_29_08_10_23 <- read_xls("metadata/v1-2_PW_pattypan 2023-05-29 08_10_23.xls", 
@@ -49,16 +53,19 @@ filtered_tbl_source_repo_UK_comp_collection <- tbl_source_repo_raw_export_UK_com
   filter(! str_detect(collection, "3304"))
 
 # Combine by join on the image filename
-# Use basename from base R 
+# Use basename from base R to extract filename from path
 new_pattypan_metadata <- tbl_v1_2_PW_pattypan_2023_05_29_08_10_23 %>% mutate(name = basename(path))
-#new_pattypan_metadata <- new_pattypan_metadata %>% mutate(Source = filtered_tbl_source_repo_UK_comp_collection$dc_identifier_uri) 
-#%>% left_join(filtered_tbl_source_repo_UK_comp_collection, )
+# Use stringr to extract filename from title
+filtered_tbl_source_repo_UK_comp_collection$name <- ""
+filtered_tbl_source_repo_UK_comp_collection <- filtered_tbl_source_repo_UK_comp_collection %>% mutate(name = str_replace_all(dc_title, "^.*, ", ""))
+new_pattypan_metadata <-  left_join(filtered_tbl_source_repo_UK_comp_collection, new_pattypan_metadata, by(name)) 
 
-# Add a new column 'Source' for the DataShare DOI
-new_pattypan_metadata$Source = ""
+# Add a new column 'source' for the DataShare DOI, either identifier_uri or identifier_uri_2
+new_pattypan_metadata$source = ""
 #new etc $Source <- 
   
 # Add and set column permission to {{Cc-by-sa-4.0}} 
+new_pattypan_metadata$permission = "Cc-by-sa-4.0"
 
 # Set pattypan title to the datashare title
 
