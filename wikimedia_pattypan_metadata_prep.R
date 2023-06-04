@@ -49,4 +49,13 @@ filtered_tbl_source_repo_UK_comp_collection <- tbl_source_repo_raw_export_UK_com
 
 # Combine by join on the image filename
 
+
+# Add a new column 'Source' for the DataShare DOI
+
+# Set pattypan title to the datashare title
+
+# Drop pattypan name
+
+# Set pattypan depicted_place to the datashare spatial coverage
+
 # OUtput to a new file, for pasting into the xls
