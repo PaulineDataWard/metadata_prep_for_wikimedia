@@ -25,9 +25,9 @@ tbl_source_repo_raw_export_UK_comp_collecn10283_4857 <- read_csv("metadata/sourc
                                                                               `dc.relation.isreferencedby[en_UK]` = col_character(), 
                                                                               `dc.relation.isversionof[]` = col_character(), 
                                                                               `dc.relation.isversionof[en_UK]` = col_character(), 
-                                                                              `dc.rights[]` = col_character(), 
-                                                                              `dc.subject.classification[en_UK]` = col_character(), 
-                                                                              `dc.subject[en_UK]` = col_character(), 
+                                                                              `dc.rights[]` = col_skip(), 
+                                                                              `dc.subject.classification[en_UK]` = col_skip(), 
+                                                                              `dc.subject[en_UK]` = col_skip(), 
                                                                               `dc.title[en_UK]` = col_character(), 
                                                                               `dc.type[]` = col_skip(), `dc.type[en_UK]` = col_skip(), 
                                                                               `ds.not-emailable.item[en]` = col_skip())) %>% clean_names()
@@ -37,7 +37,7 @@ print("Imported source metadata is a tibble: ")
 print(as.character(is_tibble(tbl_source_repo_raw_export_UK_comp_collecn10283_4857)))
 
 # Read in metadata from pattypan with readexcel()
-tbl_v1_2_PW_pattypan_2023_05_29_08_10_23 <- read_excel("metadata/v1-2_PW_pattypan 2023-05-29 08_10_23.xls", 
+tbl_v1_2_PW_pattypan_2023_05_29_08_10_23 <- read_xls("metadata/v1-2_PW_pattypan 2023-05-29 08_10_23.xls", 
                                                    col_types = c("text", "text", "text", 
                                                                  "text", "text", "skip", "text", "skip", 
                                                                  "skip"))
@@ -50,16 +50,23 @@ filtered_tbl_source_repo_UK_comp_collection <- tbl_source_repo_raw_export_UK_com
 
 # Combine by join on the image filename
 # Use basename from base R 
-tbl_v1_2_PW_pattypan_2023_05_29_08_10_23 <- tbl_v1_2_PW_pattypan_2023_05_29_08_10_23 %>% mutate(name = basename(path))
+new_pattypan_metadata <- tbl_v1_2_PW_pattypan_2023_05_29_08_10_23 %>% mutate(name = basename(path))
+#new_pattypan_metadata <- new_pattypan_metadata %>% mutate(Source = filtered_tbl_source_repo_UK_comp_collection$dc_identifier_uri) 
+#%>% left_join(filtered_tbl_source_repo_UK_comp_collection, )
 
 # Add a new column 'Source' for the DataShare DOI
-tbl_v1_2_PW_pattypan_2023_05_29_08_10_23$Source = ""
-#tbl_v1_2_PW_pattypan_2023_05_29_08_10_23$Source <- 
+new_pattypan_metadata$Source = ""
+#new etc $Source <- 
   
+# Add and set column permission to {{Cc-by-sa-4.0}} 
+
 # Set pattypan title to the datashare title
+
+# Set pattypan description 
 
 # Drop pattypan name
 
 # Set pattypan depicted_place to the datashare spatial coverage
 
 # OUtput to a new file, for pasting into the xls
+write_delim(new_pattypan_metadata, here("metadata", "new_pattypan_cols.csv"), delim = ",")
