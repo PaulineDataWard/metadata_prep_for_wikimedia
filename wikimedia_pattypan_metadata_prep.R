@@ -7,6 +7,7 @@ library(readr)
 library(janitor)
 library(readxl)
 library(stringr)
+library(tools)
 
 # Read in metadata from source repo CSV
 # df_datashare_metadata <- read_csv(here("metadata", "source_repo_raw_export_UK_comp_collecn10283-4857.csv"))
@@ -48,10 +49,13 @@ filtered_tbl_source_repo_UK_comp_collection <- tbl_source_repo_raw_export_UK_com
   filter(! str_detect(collection, "3304"))
 
 # Combine by join on the image filename
-
+# Use basename from base R 
+tbl_v1_2_PW_pattypan_2023_05_29_08_10_23 <- tbl_v1_2_PW_pattypan_2023_05_29_08_10_23 %>% mutate(name = basename(path))
 
 # Add a new column 'Source' for the DataShare DOI
-
+tbl_v1_2_PW_pattypan_2023_05_29_08_10_23$Source = ""
+#tbl_v1_2_PW_pattypan_2023_05_29_08_10_23$Source <- 
+  
 # Set pattypan title to the datashare title
 
 # Drop pattypan name
