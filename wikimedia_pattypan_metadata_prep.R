@@ -76,5 +76,8 @@ new_pattypan_metadata$permission = "Cc-by-sa-4.0"
 
 # Set pattypan depicted_place to the datashare spatial coverage
 
+# Add and set pattypan column date, from chars 7-10 of the temporal coverage field of source
+new_pattypan_metadata$date = "YYYY"
+
 # OUtput to a new file, for pasting into the xls
 write_delim(new_pattypan_metadata, here("metadata", "new_pattypan_cols.csv"), delim = ",")
