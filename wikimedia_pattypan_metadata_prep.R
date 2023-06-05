@@ -52,10 +52,11 @@ print(typeof(tbl_v1_2_PW_pattypan_2023_05_29_08_10_23))
 filtered_tbl_source_repo_UK_comp_collection <- tbl_source_repo_raw_export_UK_comp_collecn10283_4857 %>%
   filter(! str_detect(collection, "3304"))
 
-# Combine by join on the image filename
+# Combine by join on the image filename (deal with duplicates?!)
 # Use basename from base R to extract filename from path
 new_pattypan_metadata <- tbl_v1_2_PW_pattypan_2023_05_29_08_10_23 %>% mutate(name = basename(path))
 # Use stringr to extract filename from title
+# Need to avoid changing upper case to lower case!
 filtered_tbl_source_repo_UK_comp_collection$name <- ""
 filtered_tbl_source_repo_UK_comp_collection <- filtered_tbl_source_repo_UK_comp_collection %>% mutate(name = str_replace_all(dc_title, "^.*, ", ""))
 new_pattypan_metadata <-  left_join(filtered_tbl_source_repo_UK_comp_collection, new_pattypan_metadata, by(name)) 
