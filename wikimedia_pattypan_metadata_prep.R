@@ -62,8 +62,8 @@ new_pattypan_metadata <- tbl_pattypan_intermediate_processed_fileset_UK_Tower_Bl
 filtered_tbl_source_repo_UK_comp_collection$img_filename <- ""
 filtered_tbl_source_repo_UK_comp_collection <- filtered_tbl_source_repo_UK_comp_collection %>% mutate(img_filename = str_replace_all(dc_title, "^.*, ", ""))
 
-
-new_pattypan_metadata <-  left_join(filtered_tbl_source_repo_UK_comp_collection, new_pattypan_metadata, by(name)) 
+# Left join on common column ie img_filename - adds all columns
+new_pattypan_metadata <- left_join(filtered_tbl_source_repo_UK_comp_collection, new_pattypan_metadata, by = "img_filename") 
 
 # Drop pattypan name, since join has already been carried out
 
