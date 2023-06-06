@@ -40,13 +40,14 @@ print(distinct(tbl_source_repo_raw_export_UK_comp_collecn10283_4857, dc_identifi
 print("distinct uri2 values:")
 print(distinct(tbl_source_repo_raw_export_UK_comp_collecn10283_4857, dc_identifier_uri_2))
 
-# Read in metadata from pattypan with readexcel()
-tbl_v1_2_PW_pattypan_2023_05_29_08_10_23 <- read_xls("metadata/v1-2_PW_pattypan 2023-05-29 08_10_23.xls", 
-                                                   col_types = c("text", "text", "text", 
-                                                                 "text", "text", "skip", "text", "skip", 
-                                                                 "skip"))
+# Read in metadata from pattypan 
+tbl_pattypan_intermediate_processed_fileset_UK_Tower_Block <- read_xls("metadata/pattypan_intermediate_processed_fileset_UK_Tower_Block.xls", 
+                                                                     col_types = c("text", "text", "text", 
+                                                                                   "text", "text", "text", "text"))
+
+
 print("Imported pattypan table is typeof: ")
-print(typeof(tbl_v1_2_PW_pattypan_2023_05_29_08_10_23))
+print(typeof(tbl_pattypan_intermediate_processed_fileset_UK_Tower_Block))
   
 # Identify and then exclude the images already on wikimedia ie Aberdeen collection
 filtered_tbl_source_repo_UK_comp_collection <- tbl_source_repo_raw_export_UK_comp_collecn10283_4857 %>%
@@ -54,7 +55,7 @@ filtered_tbl_source_repo_UK_comp_collection <- tbl_source_repo_raw_export_UK_com
 
 # Combine by join on the image filename 
 # Use basename from base R to extract filename from path
-new_pattypan_metadata <- tbl_v1_2_PW_pattypan_2023_05_29_08_10_23 %>% mutate(name = basename(path))
+new_pattypan_metadata <- tbl_pattypan_intermediate_processed_fileset_UK_Tower_Block %>% mutate(name = basename(path))
 # Use stringr to extract filename from title
 # No longer need to avoid changing upper case to lower case, as we're using the intermediate fileset '/processed', already lower case. 
 filtered_tbl_source_repo_UK_comp_collection$name <- ""
@@ -68,7 +69,7 @@ new_pattypan_metadata <-  left_join(filtered_tbl_source_repo_UK_comp_collection,
 # new_pattypan_metadata$source <- ""
 
 # Should be no need to set column permission, since we have used pattypan to set this. 
-# new_pattypan_metadata$permission = "Cc-by-sa-4.0"
+# OLD!!! new_pattypan_metadata$permission = "Cc-by-sa-4.0"
 
 # Set pattypan title to the datashare title
 
