@@ -52,27 +52,28 @@ print(typeof(tbl_v1_2_PW_pattypan_2023_05_29_08_10_23))
 filtered_tbl_source_repo_UK_comp_collection <- tbl_source_repo_raw_export_UK_comp_collecn10283_4857 %>%
   filter(! str_detect(collection, "3304"))
 
-# Combine by join on the image filename (deal with duplicates?!)
+# Combine by join on the image filename 
 # Use basename from base R to extract filename from path
 new_pattypan_metadata <- tbl_v1_2_PW_pattypan_2023_05_29_08_10_23 %>% mutate(name = basename(path))
 # Use stringr to extract filename from title
-# Need to avoid changing upper case to lower case!
+# No longer need to avoid changing upper case to lower case, as we're using the intermediate fileset '/processed', already lower case. 
 filtered_tbl_source_repo_UK_comp_collection$name <- ""
 filtered_tbl_source_repo_UK_comp_collection <- filtered_tbl_source_repo_UK_comp_collection %>% mutate(name = str_replace_all(dc_title, "^.*, ", ""))
 new_pattypan_metadata <-  left_join(filtered_tbl_source_repo_UK_comp_collection, new_pattypan_metadata, by(name)) 
 
-# Add a new column 'source' for the DataShare DOI, either identifier_uri or identifier_uri_2
-new_pattypan_metadata$source = ""
-#new etc $Source <- 
-  
-# Add and set column permission to {{Cc-by-sa-4.0}} 
-new_pattypan_metadata$permission = "Cc-by-sa-4.0"
+# Drop pattypan name, since join has already been carried out
+
+
+# Replace value in column 'source' with the DataShare DOI, either identifier_uri or identifier_uri_2
+# new_pattypan_metadata$source <- ""
+
+# Should be no need to set column permission, since we have used pattypan to set this. 
+# new_pattypan_metadata$permission = "Cc-by-sa-4.0"
 
 # Set pattypan title to the datashare title
 
-# Set pattypan description 
+# Set pattypan description to datashare description
 
-# Drop pattypan name
 
 # Set pattypan depicted_place to the datashare spatial coverage
 
