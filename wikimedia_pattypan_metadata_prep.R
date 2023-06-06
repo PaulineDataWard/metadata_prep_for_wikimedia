@@ -13,18 +13,18 @@ library(tools)
 # df_datashare_metadata <- read_csv(here("metadata", "source_repo_raw_export_UK_comp_collecn10283-4857.csv"))
 
 tbl_source_repo_raw_export_UK_comp_collecn10283_4857 <- read_csv("metadata/source_repo_raw_export_UK_comp_collecn10283-4857.csv", 
-                                                             col_types = cols(`dc.contributor.other[en_UK]` = col_character(), 
-                                                                              `dc.contributor[en]` = col_character(), 
+                                                             col_types = cols(`dc.contributor.other[en_UK]` = col_skip(), 
+                                                                              `dc.contributor[en]` = col_skip(), 
                                                                               `dc.coverage.spatial[en]` = col_character(), 
                                                                               `dc.coverage.spatial[en_UK]` = col_character(), 
                                                                               `dc.description.abstract[en_UK]` = col_character(), 
                                                                               `dc.identifier.uri[]` = col_character(), 
                                                                               `dc.language.iso[]` = col_skip(), 
                                                                               `dc.language.iso[en_UK]` = col_skip(), 
-                                                                              `dc.publisher[en_UK]` = col_character(), 
-                                                                              `dc.relation.isreferencedby[en_UK]` = col_character(), 
-                                                                              `dc.relation.isversionof[]` = col_character(), 
-                                                                              `dc.relation.isversionof[en_UK]` = col_character(), 
+                                                                              `dc.publisher[en_UK]` = col_skip(), 
+                                                                              `dc.relation.isreferencedby[en_UK]` = col_skip(), 
+                                                                              `dc.relation.isversionof[]` = col_skip(), 
+                                                                              `dc.relation.isversionof[en_UK]` = col_skip(), 
                                                                               `dc.rights[]` = col_skip(), 
                                                                               `dc.subject.classification[en_UK]` = col_skip(), 
                                                                               `dc.subject[en_UK]` = col_skip(), 
@@ -55,11 +55,14 @@ filtered_tbl_source_repo_UK_comp_collection <- tbl_source_repo_raw_export_UK_com
 
 # Combine by join on the image filename 
 # Use basename from base R to extract filename from path
-new_pattypan_metadata <- tbl_pattypan_intermediate_processed_fileset_UK_Tower_Block %>% mutate(name = basename(path))
+new_pattypan_metadata <- tbl_pattypan_intermediate_processed_fileset_UK_Tower_Block %>% mutate(img_filename = basename(path))
+
 # Use stringr to extract filename from title
 # No longer need to avoid changing upper case to lower case, as we're using the intermediate fileset '/processed', already lower case. 
-filtered_tbl_source_repo_UK_comp_collection$name <- ""
-filtered_tbl_source_repo_UK_comp_collection <- filtered_tbl_source_repo_UK_comp_collection %>% mutate(name = str_replace_all(dc_title, "^.*, ", ""))
+filtered_tbl_source_repo_UK_comp_collection$img_filename <- ""
+filtered_tbl_source_repo_UK_comp_collection <- filtered_tbl_source_repo_UK_comp_collection %>% mutate(img_filename = str_replace_all(dc_title, "^.*, ", ""))
+
+
 new_pattypan_metadata <-  left_join(filtered_tbl_source_repo_UK_comp_collection, new_pattypan_metadata, by(name)) 
 
 # Drop pattypan name, since join has already been carried out
