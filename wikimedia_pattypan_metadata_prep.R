@@ -71,12 +71,16 @@ new_pattypan_metadata <-  left_join(filtered_tbl_source_repo_UK_comp_collection,
 # Should be no need to set column permission, since we have used pattypan to set this. 
 # OLD!!! new_pattypan_metadata$permission = "Cc-by-sa-4.0"
 
+# Populate the categories column, in line with the Aberdeen pilot data on Wikimedia Commons
+new_pattypan_metadata$categories <- "Public housing in the United Kingdom"
+
 # Set pattypan title to the datashare title
 
 # Set pattypan description to datashare description
 
 
 # Set pattypan depicted_place to the datashare spatial coverage
+
 
 # Add and set pattypan column date, from chars 7-10 of the temporal coverage field of source
 new_pattypan_metadata$date = "YYYY"
