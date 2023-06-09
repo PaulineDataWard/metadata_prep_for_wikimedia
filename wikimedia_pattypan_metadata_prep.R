@@ -64,8 +64,15 @@ filtered_tbl_source <- filtered_tbl_source %>% mutate(img_filename = str_replace
 filtered_tbl_source <- filtered_tbl_source %>% mutate(year = str_sub(dc_coverage_temporal, start = 7, end = 10))
 
 # Combine the three versions of the spatial coverage column - two of the three are always empty 'NA'
-filtered_tbl_source <- filtered_tbl_source %>% mutate(dc_coverage_spatial = paste(filtered_tbl_source$dc_coverage_spatial, dc_coverage_spatial_en, dc_coverage_spatial_en_uk))
-  
+# for source_row in filtered_tbl_source {
+#   if 
+#   filtered_tbl_source <- filtered_tbl_source %>% mutate(dc_coverage_spatial = str_replace(dc_coverage_spatial, "^$", ""))
+#   filtered_tbl_source <- filtered_tbl_source %>% mutate(dc_coverage_spatial_en = str_replace(dc_coverage_spatial_en, "^$", ""))
+#   filtered_tbl_source <- filtered_tbl_source %>% mutate(dc_coverage_spatial_en_uk = str_replace(dc_coverage_spatial_en_uk, "^NA$", ""))
+#   filtered_tbl_source <- filtered_tbl_source %>% mutate(depicted_place = paste(dc_coverage_spatial, dc_coverage_spatial_en, dc_coverage_spatial_en_uk))
+# }
+# filtered_tbl_source <- filtered_tbl_source %>% mutate
+filtered_tbl_source <- filtered_tbl_source %>% mutate(depicted_place = coalesce(dc_coverage_spatial, dc_coverage_spatial_en, dc_coverage_spatial_en_uk))
   
 # jettison columns no longer needed in filtered_tb_source
 filtered_tbl_source <- select(filtered_tbl_source,-dc_contributor,-dc_contributor_other) 
