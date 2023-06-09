@@ -50,19 +50,26 @@ print("Imported pattypan table is typeof: ")
 print(typeof(tbl_pattypan_intermediate_processed_fileset_UK_Tower_Block))
   
 # Identify and then exclude the images already on wikimedia ie Aberdeen collection
-filtered_tbl_source_repo_UK_comp_collection <- tbl_source_repo_raw_export_UK_comp_collecn10283_4857 %>%
+filtered_tbl_source <- tbl_source_repo_raw_export_UK_comp_collecn10283_4857 %>%
   filter(! str_detect(collection, "3304"))
 
-# Combine by join on the image filename 
+# Prep the columns in order to combine by join on the image filename 
 # Use basename from base R to extract filename from path
 new_pattypan_metadata <- tbl_pattypan_intermediate_processed_fileset_UK_Tower_Block %>% mutate(img_filename = basename(path))
 
 # Use stringr to extract filename from title
 # No longer need to avoid changing upper case to lower case, as we're using the intermediate fileset '/processed', already lower case. 
-filtered_tbl_source_repo_UK_comp_collection$img_filename <- ""
-filtered_tbl_source_repo_UK_comp_collection <- filtered_tbl_source_repo_UK_comp_collection %>% mutate(img_filename = str_replace_all(dc_title, "^.*, ", ""))
+filtered_tbl_source$img_filename <- ""
+filtered_tbl_source <- filtered_tbl_source %>% mutate(img_filename = str_replace_all(dc_title, "^.*, ", ""))
+filtered_tbl_source <- filtered_tbl_source %>% mutate(year = str_sub(dc_coverage_temporal, start = 7, end = 10))
+
+# Combine the three versions of the spatial coverage column - two of the three are always empty 'NA'
+filtered_tbl_source <- filtered_tbl_source %>% mutate(dc_coverage_spatial = paste(filtered_tbl_source$dc_coverage_spatial, dc_coverage_spatial_en, dc_coverage_spatial_en_uk))
+  
+  
 # jettison columns no longer needed in filtered_tb_source
-filtered_tbl_source_repo_UK_comp_collection <- select(filtered_tbl_source_repo_UK_comp_collection,-dc_contributor,-dc_contributor_other)
+filtered_tbl_source <- select(filtered_tbl_source,-dc_contributor,-dc_contributor_other) 
+
 
 
 # Left join on common column ie img_filename - adds all columns
