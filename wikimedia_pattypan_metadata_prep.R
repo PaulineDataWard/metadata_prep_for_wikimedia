@@ -61,9 +61,13 @@ new_pattypan_metadata <- tbl_pattypan_intermediate_processed_fileset_UK_Tower_Bl
 # No longer need to avoid changing upper case to lower case, as we're using the intermediate fileset '/processed', already lower case. 
 filtered_tbl_source_repo_UK_comp_collection$img_filename <- ""
 filtered_tbl_source_repo_UK_comp_collection <- filtered_tbl_source_repo_UK_comp_collection %>% mutate(img_filename = str_replace_all(dc_title, "^.*, ", ""))
+# jettison columns no longer needed in filtered_tb_source
+filtered_tbl_source_repo_UK_comp_collection <- select(filtered_tbl_source_repo_UK_comp_collection,-dc_contributor,-dc_contributor_other)
+
 
 # Left join on common column ie img_filename - adds all columns
-new_pattypan_metadata <- left_join(filtered_tbl_source_repo_UK_comp_collection, new_pattypan_metadata, by = "img_filename") 
+new_pattypan_metadata <-  new_pattypan_metadata %>% 
+  left_join(filtered_tbl_source_repo_UK_comp_collection, by = "img_filename") 
 
 # Drop pattypan name, since join has already been carried out
 
