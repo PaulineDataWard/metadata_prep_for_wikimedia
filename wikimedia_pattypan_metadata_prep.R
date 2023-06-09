@@ -9,29 +9,20 @@ library(readxl)
 library(stringr)
 library(tools)
 
-# Read in metadata from source repo CSV
-# df_datashare_metadata <- read_csv(here("metadata", "source_repo_raw_export_UK_comp_collecn10283-4857.csv"))
-
+# Read in metadata from source repo CSV, 
+# after manual cleaning of CSV in Excel to remove unused columns
 tbl_source_repo_raw_export_UK_comp_collecn10283_4857 <- read_csv("metadata/source_repo_raw_export_UK_comp_collecn10283-4857.csv", 
-                                                             col_types = cols(`dc.contributor.other[en_UK]` = col_skip(), 
-                                                                              `dc.contributor[en]` = col_skip(), 
-                                                                              `dc.coverage.spatial[en]` = col_character(), 
-                                                                              `dc.coverage.spatial[en_UK]` = col_character(), 
+                                                             col_types = cols(`dc.contributor[en]` = col_character(), 
                                                                               `dc.description.abstract[en_UK]` = col_character(), 
-                                                                              `dc.identifier.uri[]` = col_character(), 
-                                                                              `dc.language.iso[]` = col_skip(), 
-                                                                              `dc.language.iso[en_UK]` = col_skip(), 
                                                                               `dc.publisher[en_UK]` = col_skip(), 
+                                                                              `dc.relation.isreferencedby[]` = col_skip(), 
                                                                               `dc.relation.isreferencedby[en_UK]` = col_skip(), 
                                                                               `dc.relation.isversionof[]` = col_skip(), 
                                                                               `dc.relation.isversionof[en_UK]` = col_skip(), 
-                                                                              `dc.rights[]` = col_skip(), 
+                                                                              `dc.rights[]` = col_skip(), `dc.rights[en]` = col_skip(), 
+                                                                              `dc.subject.classification[]` = col_skip(), 
                                                                               `dc.subject.classification[en_UK]` = col_skip(), 
-                                                                              `dc.subject[en_UK]` = col_skip(), 
-                                                                              `dc.title[en_UK]` = col_character(), 
-                                                                              `dc.type[]` = col_skip(), `dc.type[en_UK]` = col_skip(), 
-                                                                              `ds.not-emailable.item[en]` = col_skip())) %>% clean_names()
-
+                                                                              `dc.subject[]` = col_skip(), `dc.subject[en_UK]` = col_skip())) %>% clean_names()
 
 # print("Imported source metadata is a tibble: ")
 # print(as.character(is_tibble(tbl_source_repo_raw_export_UK_comp_collecn10283_4857)))
@@ -63,17 +54,12 @@ filtered_tbl_source$img_filename <- ""
 filtered_tbl_source <- filtered_tbl_source %>% mutate(img_filename = str_replace_all(dc_title, "^.*, ", ""))
 filtered_tbl_source <- filtered_tbl_source %>% mutate(year = str_sub(dc_coverage_temporal, start = 7, end = 10))
 
-# Combine the three versions of the spatial coverage column - two of the three are always empty 'NA'
-filtered_tbl_source <- filtered_tbl_source %>% mutate(depicted_place = coalesce(dc_coverage_spatial, dc_coverage_spatial_en, dc_coverage_spatial_en_uk))
-# NOT WORKING filtered_tbl_source <- filtered_tbl_source %>% mutate(depicted_place = str_replace(depicted_place, '\|\|', ""))   
 # jettison columns no longer needed in filtered_tb_source
 filtered_tbl_source <- select(filtered_tbl_source,-dc_contributor,-dc_contributor_other) 
 
-
-
 # Left join on common column ie img_filename - adds all columns
 new_pattypan_metadata <-  new_pattypan_metadata %>% 
-  left_join(filtered_tbl_source_repo_UK_comp_collection, by = "img_filename") 
+  left_join(filtered_tbl_source, by = "img_filename") 
 
 # Drop pattypan name, since join has already been carried out
 
@@ -81,8 +67,6 @@ new_pattypan_metadata <-  new_pattypan_metadata %>%
 # Replace value in column 'source' with the DataShare DOI, either identifier_uri or identifier_uri_2
 # new_pattypan_metadata$source <- ""
 
-# Should be no need to set column permission, since we have used pattypan to set this. 
-# OLD!!! new_pattypan_metadata$permission = "Cc-by-sa-4.0"
 
 # Populate the categories column, in line with the Aberdeen pilot data on Wikimedia Commons
 new_pattypan_metadata$categories <- "Public housing in the United Kingdom"
@@ -93,7 +77,7 @@ new_pattypan_metadata$categories <- "Public housing in the United Kingdom"
 
 
 # Set pattypan depicted_place to the datashare spatial coverage
-
+new_pattypan_metadata$depicted_place = filtered_tbl_source$dc_coverage_spatial
 
 # Add and set pattypan column date, from chars 7-10 of the temporal coverage field of source
 new_pattypan_metadata$date = "YYYY"
