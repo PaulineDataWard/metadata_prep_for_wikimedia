@@ -33,12 +33,12 @@ tbl_source_repo_raw_export_UK_comp_collecn10283_4857 <- read_csv("metadata/sourc
                                                                               `ds.not-emailable.item[en]` = col_skip())) %>% clean_names()
 
 
-print("Imported source metadata is a tibble: ")
-print(as.character(is_tibble(tbl_source_repo_raw_export_UK_comp_collecn10283_4857)))
-print("distinct uri values:")
-print(distinct(tbl_source_repo_raw_export_UK_comp_collecn10283_4857, dc_identifier_uri))
-print("distinct uri2 values:")
-print(distinct(tbl_source_repo_raw_export_UK_comp_collecn10283_4857, dc_identifier_uri_2))
+# print("Imported source metadata is a tibble: ")
+# print(as.character(is_tibble(tbl_source_repo_raw_export_UK_comp_collecn10283_4857)))
+# print("distinct uri values:")
+# print(distinct(tbl_source_repo_raw_export_UK_comp_collecn10283_4857, dc_identifier_uri))
+# print("distinct uri2 values:")
+# print(distinct(tbl_source_repo_raw_export_UK_comp_collecn10283_4857, dc_identifier_uri_2))
 
 # Read in metadata from pattypan 
 tbl_pattypan_intermediate_processed_fileset_UK_Tower_Block <- read_xls("metadata/pattypan_intermediate_processed_fileset_UK_Tower_Block.xls", 
@@ -64,16 +64,8 @@ filtered_tbl_source <- filtered_tbl_source %>% mutate(img_filename = str_replace
 filtered_tbl_source <- filtered_tbl_source %>% mutate(year = str_sub(dc_coverage_temporal, start = 7, end = 10))
 
 # Combine the three versions of the spatial coverage column - two of the three are always empty 'NA'
-# for source_row in filtered_tbl_source {
-#   if 
-#   filtered_tbl_source <- filtered_tbl_source %>% mutate(dc_coverage_spatial = str_replace(dc_coverage_spatial, "^$", ""))
-#   filtered_tbl_source <- filtered_tbl_source %>% mutate(dc_coverage_spatial_en = str_replace(dc_coverage_spatial_en, "^$", ""))
-#   filtered_tbl_source <- filtered_tbl_source %>% mutate(dc_coverage_spatial_en_uk = str_replace(dc_coverage_spatial_en_uk, "^NA$", ""))
-#   filtered_tbl_source <- filtered_tbl_source %>% mutate(depicted_place = paste(dc_coverage_spatial, dc_coverage_spatial_en, dc_coverage_spatial_en_uk))
-# }
-# filtered_tbl_source <- filtered_tbl_source %>% mutate
 filtered_tbl_source <- filtered_tbl_source %>% mutate(depicted_place = coalesce(dc_coverage_spatial, dc_coverage_spatial_en, dc_coverage_spatial_en_uk))
-  
+# NOT WORKING filtered_tbl_source <- filtered_tbl_source %>% mutate(depicted_place = str_replace(depicted_place, '\|\|', ""))   
 # jettison columns no longer needed in filtered_tb_source
 filtered_tbl_source <- select(filtered_tbl_source,-dc_contributor,-dc_contributor_other) 
 
