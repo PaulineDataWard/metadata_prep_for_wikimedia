@@ -72,23 +72,13 @@ filtered_tbl_source <- select(filtered_tbl_source,-dc_contributor,-dc_contributo
 new_pattypan_metadata <-  new_pattypan_metadata %>% 
   left_join(filtered_tbl_source, by = "image_id") 
 
-
-
-# Replace value in column 'source' with the DataShare DOI, either identifier_uri or identifier_uri_2
-new_pattypan_metadata$source <- ""
-new_pattypan_metadata$source <- str_match(dc_identifier_uri, "^https://doi.org/ds/7488/[0-9]{4}$")
-
-
-# Populate the categories column, in line with the Aberdeen pilot data on Wikimedia Commons
-new_pattypan_metadata$categories <- "Public housing in the United Kingdom"
+# Set pattypan description to datashare description
+new_pattypan_metadata$description <- new_pattypan_metadata$dc_description_abstract
 
 # Set pattypan title to the datashare title, but with .png where appropriate
-# where 
+# where ...?
 new_pattypan_metadata$title <- str_replace(new_pattypan_metadata$dc_title, ".jpg$", ".png") %>% 
   filter(str_detect(img_filename, ".png$"))
-
-# Set pattypan description to datashare description
-
 
 # Set pattypan depicted_place to the datashare spatial coverage
 new_pattypan_metadata$depicted_place = new_pattypan_metadata$dc_coverage_spatial
@@ -96,8 +86,19 @@ new_pattypan_metadata$depicted_place = new_pattypan_metadata$dc_coverage_spatial
 # Add and set pattypan column date, from chars 7-10 of the temporal coverage field of source
 new_pattypan_metadata$date = new_pattypan_metadata$year
 
+# Replace value in column 'source' with the DataShare DOI, either identifier_uri or identifier_uri_2
+new_pattypan_metadata$source <- ""
+new_pattypan_metadata <- new_pattypan_metadata %>% mutate(source = str_match(dc_identifier_uri, "^https://doi.org/ds/7488/[0-9]{4}$"))
+
+
+# Populate the categories column, in line with the Aberdeen pilot data on Wikimedia Commons
+new_pattypan_metadata$categories <- "Public housing in the United Kingdom"
+
+
+
+
 # Drop pattypan name, and other redundant cols
-new_pattypan_metadata <- select(new_pattypan_metadata, -name, -year, -dc_coverage_spatial) 
+new_pattypan_metadata <- select(new_pattypan_metadata, -name, -year, -dc_coverage_spatial, -dc_description_abstract, -id) 
 
 # OUtput to a new file, for pasting into the xls
 write_delim(new_pattypan_metadata, here("metadata", "new_pattypan_cols.csv"), delim = ",")
