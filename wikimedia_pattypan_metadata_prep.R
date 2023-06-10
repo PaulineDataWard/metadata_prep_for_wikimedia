@@ -11,9 +11,9 @@ library(tools)
 
 # Read in metadata from source repo CSV, 
 # after manual cleaning of CSV in Excel to remove unused columns
-tbl_source_repo_raw_export_UK_comp_collecn10283_4857 <- read_csv("metadata/source_repo_raw_export_UK_comp_collecn10283-4857.csv", 
+tbl_source_repo_raw_export_UK_comp_collecn10283_4857 <- read_csv("metadata/source_repo_cleaned_export_UK_comp_collecn10283-4857.csv", 
                                                              col_types = cols(`dc.contributor[en]` = col_character(), 
-                                                                              `dc.description.abstract[en_UK]` = col_character(), 
+                                                                              `dc.description.abstract[en_UK]` = col_skip(), 
                                                                               `dc.publisher[en_UK]` = col_skip(), 
                                                                               `dc.relation.isreferencedby[]` = col_skip(), 
                                                                               `dc.relation.isreferencedby[en_UK]` = col_skip(), 
@@ -91,13 +91,13 @@ new_pattypan_metadata$title <- str_replace(new_pattypan_metadata$dc_title, ".jpg
 
 
 # Set pattypan depicted_place to the datashare spatial coverage
-new_pattypan_metadata$depicted_place = filtered_tbl_source$dc_coverage_spatial
+new_pattypan_metadata$depicted_place = new_pattypan_metadata$dc_coverage_spatial
 
 # Add and set pattypan column date, from chars 7-10 of the temporal coverage field of source
-new_pattypan_metadata$date = 'YYYY'
+new_pattypan_metadata$date = new_pattypan_metadata$year
 
-# Drop pattypan name, since join has already been carried out
-new_pattypan_metadata <- select(new_pattypan_metadata, -name) 
+# Drop pattypan name, and other redundant cols
+new_pattypan_metadata <- select(new_pattypan_metadata, -name, -year, -dc_coverage_spatial) 
 
 # OUtput to a new file, for pasting into the xls
 write_delim(new_pattypan_metadata, here("metadata", "new_pattypan_cols.csv"), delim = ",")
