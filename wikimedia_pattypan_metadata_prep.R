@@ -76,9 +76,9 @@ new_pattypan_metadata <-  new_pattypan_metadata %>%
 new_pattypan_metadata$description <- new_pattypan_metadata$dc_description_abstract
 
 # Set pattypan title to the datashare title, but with .png where appropriate
-# where ...?
-new_pattypan_metadata$title <- str_replace(new_pattypan_metadata$dc_title, ".jpg$", ".png") %>% 
-  filter(str_detect(img_filename, ".png$"))
+# 
+new_pattypan_metadata <- new_pattypan_metadata %>% 
+  mutate(title = if_else(!str_detect(img_filename, ".png$"), dc_title, str_replace(dc_title, ".jpg$", ".png")))
 
 # Set pattypan depicted_place to the datashare spatial coverage
 new_pattypan_metadata$depicted_place = new_pattypan_metadata$dc_coverage_spatial
