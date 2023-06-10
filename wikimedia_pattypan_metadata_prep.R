@@ -76,7 +76,6 @@ new_pattypan_metadata <-  new_pattypan_metadata %>%
 new_pattypan_metadata$description <- new_pattypan_metadata$dc_description_abstract
 
 # Set pattypan title to the datashare title, but with .png where appropriate
-# 
 new_pattypan_metadata <- new_pattypan_metadata %>% 
   mutate(title = if_else(!str_detect(img_filename, ".png$"), dc_title, str_replace(dc_title, ".jpg$", ".png")))
 
@@ -86,10 +85,10 @@ new_pattypan_metadata$depicted_place = new_pattypan_metadata$dc_coverage_spatial
 # Add and set pattypan column date, from chars 7-10 of the temporal coverage field of source
 new_pattypan_metadata$date = new_pattypan_metadata$year
 
-# Replace value in column 'source' with the DataShare DOI, either identifier_uri or identifier_uri_2
-new_pattypan_metadata$source <- ""
-new_pattypan_metadata <- new_pattypan_metadata %>% mutate(source = str_match(dc_identifier_uri, "^https://doi.org/ds/7488/[0-9]{4}$"))
-
+# Replace value in column 'source' with the DataShare DOI, 
+# taken from citation rather than identifier_uri because occurs only once in citation
+#new_pattypan_metadata$source <- ""
+new_pattypan_metadata <- new_pattypan_metadata %>% mutate(source = str_extract(dc_identifier_citation_en , "https://doi.org/10.7488/ds/[0-9]{4}"))
 
 # Populate the categories column, in line with the Aberdeen pilot data on Wikimedia Commons
 new_pattypan_metadata$categories <- "Public housing in the United Kingdom"
