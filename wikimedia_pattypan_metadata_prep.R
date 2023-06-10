@@ -22,6 +22,7 @@ tbl_source_repo_raw_export_UK_comp_collecn10283_4857 <- read_csv("metadata/sourc
                                                                               `dc.rights[]` = col_skip(), `dc.rights[en]` = col_skip(), 
                                                                               `dc.subject.classification[]` = col_skip(), 
                                                                               `dc.subject.classification[en_UK]` = col_skip(), 
+                                                                              `dc.creator[]` = col_skip(), 
                                                                               `dc.subject[]` = col_skip(), `dc.subject[en_UK]` = col_skip())) %>% clean_names()
 
 # print("Imported source metadata is a tibble: ")
@@ -93,11 +94,11 @@ new_pattypan_metadata <- new_pattypan_metadata %>% mutate(source = str_extract(d
 # Populate the categories column, in line with the Aberdeen pilot data on Wikimedia Commons
 new_pattypan_metadata$categories <- "Public housing in the United Kingdom"
 
-
-
-
 # Drop pattypan name, and other redundant cols
-new_pattypan_metadata <- select(new_pattypan_metadata, -name, -year, -dc_coverage_spatial, -dc_description_abstract, -id) 
+new_pattypan_metadata <- select(new_pattypan_metadata, -name, -year,  
+                                -id, -img_filename, -image_id, -collection, -dc_contributor_en,
+                                -dc_coverage_spatial, -dc_coverage_temporal, -dc_description_abstract, -dc_identifier_citation_en, -dc_identifier_uri,
+                                -dc_publisher, -dc_title) 
 
 # OUtput to a new file, for pasting into the xls
 write_delim(new_pattypan_metadata, here("metadata", "new_pattypan_cols.csv"), delim = ",")
