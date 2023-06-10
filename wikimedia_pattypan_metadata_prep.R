@@ -49,29 +49,44 @@ filtered_tbl_source <- tbl_source_repo_raw_export_UK_comp_collecn10283_4857 %>%
 new_pattypan_metadata <- tbl_pattypan_intermediate_processed_fileset_UK_Tower_Block %>% mutate(img_filename = basename(path))
 
 # Use stringr to extract filename from title
+# Workaround - many entries say jpg in title, when in fact files are .png
 # No longer need to avoid changing upper case to lower case, as we're using the intermediate fileset '/processed', already lower case. 
 filtered_tbl_source$img_filename <- ""
 filtered_tbl_source <- filtered_tbl_source %>% mutate(img_filename = str_replace_all(dc_title, "^.*, ", ""))
+
+
+# try to fix the jpg png mismatch by storing in a new variable image_id on which to join
+filtered_tbl_source$image_id <- ""
+filtered_tbl_source <- filtered_tbl_source %>% mutate(image_id = str_replace(img_filename, ".jpg$", ""))
+
+new_pattypan_metadata$image_id <- ""
+new_pattypan_metadata <- new_pattypan_metadata %>% mutate(image_id = str_replace( str_replace(img_filename, ".png$", ""), ".jpg$", ""))
+
 filtered_tbl_source <- filtered_tbl_source %>% mutate(year = str_sub(dc_coverage_temporal, start = 7, end = 10))
 
+
 # jettison columns no longer needed in filtered_tb_source
-filtered_tbl_source <- select(filtered_tbl_source,-dc_contributor,-dc_contributor_other) 
+filtered_tbl_source <- select(filtered_tbl_source,-dc_contributor,-dc_contributor_other, -img_filename) 
 
 # Left join on common column ie img_filename - adds all columns
 new_pattypan_metadata <-  new_pattypan_metadata %>% 
-  left_join(filtered_tbl_source, by = "img_filename") 
+  left_join(filtered_tbl_source, by = "image_id") 
 
 # Drop pattypan name, since join has already been carried out
 
 
 # Replace value in column 'source' with the DataShare DOI, either identifier_uri or identifier_uri_2
-# new_pattypan_metadata$source <- ""
+new_pattypan_metadata$source <- ""
+new_pattypan_metadata$source <- str_match(filtered_tbl_source$dc_identifier_uri, "^https://doi.org/ds/7488/[0-9]{4}$")
 
 
 # Populate the categories column, in line with the Aberdeen pilot data on Wikimedia Commons
 new_pattypan_metadata$categories <- "Public housing in the United Kingdom"
 
-# Set pattypan title to the datashare title
+# Set pattypan title to the datashare title, but with .png where appropriate
+# where 
+new_pattypan_metadata$title <- str_replace(new_pattypan_metadata$dc_title, ".jpg$", ".png") %>% 
+  filter(str_detect(img_filename, ".png$"))
 
 # Set pattypan description to datashare description
 
@@ -80,7 +95,7 @@ new_pattypan_metadata$categories <- "Public housing in the United Kingdom"
 new_pattypan_metadata$depicted_place = filtered_tbl_source$dc_coverage_spatial
 
 # Add and set pattypan column date, from chars 7-10 of the temporal coverage field of source
-new_pattypan_metadata$date = "YYYY"
+new_pattypan_metadata$date = 'YYYY'
 
 # OUtput to a new file, for pasting into the xls
 write_delim(new_pattypan_metadata, here("metadata", "new_pattypan_cols.csv"), delim = ",")
